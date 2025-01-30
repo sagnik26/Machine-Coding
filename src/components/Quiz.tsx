@@ -1,35 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { quizData } from "../utils/constants";
+import { handleAnswer, handleNext, handleBack } from "../store/quizSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Quiz = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answer, setAnswer] = useState(null);
-  const [score, setScore] = useState(0);
   const [feedback, setFeedBack] = useState("");
-  const [hasFinished, setHasFinished] = useState(false);
+  const dispatch = useDispatch();
+  const { currentQuestion, answers, score, hasCompleted } = useSelector(
+    (state: any) => state.quiz
+  );
 
-  const handleAnswer = (item: any) => {
-    setAnswer(item);
-    if (item === quizData[currentQuestion].answer) {
-      setFeedBack("Correct Answer!");
-    } else {
-      setFeedBack("Wrong Answer!");
-    }
-  };
-
-  const handleNext = () => {
-    setAnswer(null);
-    setFeedBack("");
-    if (answer === quizData[currentQuestion].answer) {
-      setScore(score + 1);
-    }
-    if (currentQuestion < quizData.length - 1) {
-      setCurrentQuestion((prev) => prev + 1);
-    } else {
-      setHasFinished(true);
-      setFeedBack("");
-    }
-  };
+  console.log(answers);
 
   return (
     <div
@@ -37,25 +18,32 @@ const Quiz = () => {
         marginTop: 20,
       }}
     >
-      {hasFinished && (
+      {hasCompleted && (
         <div>
           <h1>Exam is Finished!</h1>
           <h1>Score: {score}</h1>
         </div>
       )}
 
-      {!hasFinished && (
+      {!hasCompleted && (
         <>
           <h2>{quizData[currentQuestion].question}</h2>
           {quizData[currentQuestion].options.map((item: any, index: number) => {
             return (
               <button
-                onClick={() => handleAnswer(item)}
+                onClick={() =>
+                  dispatch(
+                    handleAnswer({
+                      index: currentQuestion,
+                      answer: item,
+                    })
+                  )
+                }
                 style={{
                   marginLeft: 5,
                   border: "none",
                   backgroundColor:
-                    answer === item
+                    answers[currentQuestion] === item
                       ? item === quizData[currentQuestion].answer
                         ? "green"
                         : "red"
@@ -77,7 +65,8 @@ const Quiz = () => {
               justifyContent: "flex-end",
             }}
           >
-            <button onClick={handleNext}>
+            <button onClick={() => dispatch(handleBack())}>back</button>
+            <button onClick={() => dispatch(handleNext(currentQuestion))}>
               {currentQuestion === quizData.length - 1 ? "Submit" : "Next"}
             </button>
           </div>
