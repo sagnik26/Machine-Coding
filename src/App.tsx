@@ -1,5 +1,5 @@
 import "./App.css";
-import Quiz from "./components/Quiz";
+import ExpenseTracker from "./components/ExpenseTracker";
 
 function App() {
   return (
@@ -10,10 +10,7 @@ function App() {
         justifyContent: "center",
       }}
     >
-      <div>
-        <h1>Quiz App</h1>
-        <Quiz />
-      </div>
+      <ExpenseTracker />
     </div>
   );
 }
