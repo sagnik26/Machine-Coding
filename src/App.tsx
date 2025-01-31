@@ -1,11 +1,7 @@
-import { useDispatch } from "react-redux";
 import "./App.css";
-import TodoForm from "./components/TodoForm";
-import TodoList from "./components/TodoList";
-import { setFilter } from "./store/todoSlice";
+import CountdownTimer from "./components/CountdownTimer";
 
 function App() {
-  const dispatch = useDispatch();
   return (
     <div
       style={{
@@ -14,24 +10,7 @@ function App() {
         justifyContent: "center",
       }}
     >
-      <div>
-        <h1>Todo App</h1>
-        <TodoForm />
-        <div
-          style={{
-            marginTop: 15,
-          }}
-        >
-          <button onClick={() => dispatch(setFilter("all"))}>all</button>
-          <button onClick={() => dispatch(setFilter("completed"))}>
-            completed
-          </button>
-          <button onClick={() => dispatch(setFilter("pending"))}>
-            pending
-          </button>
-        </div>
-        <TodoList />
-      </div>
+      <CountdownTimer />
     </div>
   );
 }
