@@ -1,16 +1,14 @@
 import "./App.css";
-import CountdownTimer from "./components/CountdownTimer";
-
+import WeatherApp from "./components/Weather";
 function App() {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
+        margin: 20,
+        padding: 10,
       }}
     >
-      <CountdownTimer />
+      <WeatherApp />
     </div>
   );
 }
