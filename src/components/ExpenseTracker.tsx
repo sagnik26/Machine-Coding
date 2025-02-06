@@ -1,15 +1,19 @@
-import React, { useState } from "react";
-import { addExpense, editExpense, setFilter } from "../store/expenseSlice";
+import { useState } from "react";
+import { addExpense, editExpense, deleteExpense } from "../store/expenseSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const ExpenseTracker = () => {
   const [expenseItemName, setExpenseItemName] = useState("");
   const [expenseItemPrice, setExpenseItemPrice] = useState("");
   const [expenseItemCategory, setExpenseItemCategory] = useState("");
+  const [editItem, setEditItem] = useState({
+    name: "",
+    price: "",
+    category: "",
+  });
   const dispatch = useDispatch();
   const { expenses, filterType } = useSelector((item: any) => item.expense);
   const [editId, setEditId] = useState(null);
-  const [date, setDate] = useState("");
 
   const handleAdd = (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -31,21 +35,11 @@ const ExpenseTracker = () => {
     }
   };
 
-  const filteredExpenses = expenses;
+  console.log("EEE");
 
   return (
     <div>
       <h1>Expense Tracker</h1>
-      <div>
-        <h2>Filters</h2>
-        <input
-          type="text"
-          value={date}
-          placeholder="enter date..."
-          onChange={(e) => setDate(e.target.value)}
-        />
-        <button onClick={() => {}}>search</button>
-      </div>
 
       <h2>Add Expense</h2>
       <form onSubmit={handleAdd} style={{ marginTop: 20 }}>
@@ -71,12 +65,20 @@ const ExpenseTracker = () => {
       </form>
 
       <h2>Expense List</h2>
+      <p>
+        Total Expense:{" "}
+        {expenses.reduce(
+          (acc: Number, curr: { itemPrice: Number }) =>
+            Number(acc) + Number(curr.itemPrice),
+          0
+        )}
+      </p>
       <div
         style={{
           marginTop: 20,
         }}
       >
-        {filteredExpenses.map((item: any) => {
+        {expenses.map((item: any) => {
           return (
             <div
               style={{
@@ -92,46 +94,60 @@ const ExpenseTracker = () => {
                 onClick={() => {
                   if (!editId) {
                     setEditId(item.id);
-                    setExpenseItemName(item.itemName);
-                    setExpenseItemPrice(item.itemPrice);
-                    setExpenseItemCategory(item.category);
+                    setEditItem({
+                      ...editItem,
+                      name: item.itemName,
+                      price: item.itemPrice,
+                      category: item.category,
+                    });
                   } else {
                     dispatch(
                       editExpense({
                         id: item.id,
-                        category: expenseItemCategory,
-                        itemName: expenseItemName,
-                        itemPrice: expenseItemPrice,
+                        category: editItem.category,
+                        itemName: editItem.name,
+                        itemPrice: editItem.price,
                       })
                     );
                     setEditId(null);
-                    setExpenseItemCategory("");
-                    setExpenseItemName("");
-                    setExpenseItemPrice("");
+                    setEditItem({
+                      name: "",
+                      price: "",
+                      category: "",
+                    });
                   }
                 }}
               >
                 {editId && editId === item.id ? "save" : "edit"}
+              </button>
+              <button onClick={() => dispatch(deleteExpense(item.id))}>
+                delete
               </button>
               {editId && editId === item.id && (
                 <div>
                   <input
                     type="text"
                     placeholder="Enter Name..."
-                    value={expenseItemName || item.itemName}
-                    onChange={(e) => setExpenseItemName(e.target.value)}
+                    value={editItem.name}
+                    onChange={(e) =>
+                      setEditItem({ ...editItem, name: e.target.value })
+                    }
                   />
                   <input
                     type="number"
                     placeholder="Enter Price..."
-                    value={expenseItemPrice}
-                    onChange={(e) => setExpenseItemPrice(e.target.value)}
+                    value={editItem.price}
+                    onChange={(e) =>
+                      setEditItem({ ...editItem, price: e.target.value })
+                    }
                   />
                   <input
                     type="text"
                     placeholder="Enter Category..."
-                    value={expenseItemCategory}
-                    onChange={(e) => setExpenseItemCategory(e.target.value)}
+                    value={editItem.category}
+                    onChange={(e) =>
+                      setEditItem({ ...editItem, category: e.target.value })
+                    }
                   />
                 </div>
               )}
